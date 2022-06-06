@@ -2,25 +2,30 @@ import os
 import disnake
 import disnake.ext
 from disnake.ext import commands
-from config import DISCORD_BOT_TOKEN
+import config
 
 
 def main():
     print("running")
-    bot.run(DISCORD_BOT_TOKEN)
+    bot.run(config.DISCORD_BOT_TOKEN)
 
 
 bot = commands.Bot(command_prefix='!',
                    test_guilds=[970711821478686721], intents=disnake.Intents.all(), auto_sync=True)
 
 
-@bot.slash_command(name="extensions", description="used to configure extensions", channel_types=disnake.ChannelType.private, )
+@bot.slash_command(name="extensions", description="used to configure extensions", channel_types=disnake.ChannelType.private)
 async def extensions(inter):
-    pass
+    if inter.author.id not in config.BOT_DEVELOPERS:
+        await inter.response.send_message("you are not a bot developer")
+        return
 
 
 @extensions.sub_command(name="load", description="load an extension. use ```all``` to load all extensions")
 async def extensions_load(inter: disnake.ApplicationCommandInteraction, extension: str) -> None:
+    if inter.author.id not in config.BOT_DEVELOPERS:
+        await inter.response.send_message("only bot developers can use this command")
+        return
     if extension == "all":
         for (dirpath, filenames) in os.walk("./extensions"):
             for file in filenames:
@@ -40,6 +45,9 @@ async def extensions_load(inter: disnake.ApplicationCommandInteraction, extensio
 
 @extensions.sub_command(name="unload", description="unload an extension. use ```all``` to unload all extensions")
 async def extensions_unload(inter: disnake.ApplicationCommandInteraction, extension: str) -> None:
+    if inter.author.id not in config.BOT_DEVELOPERS:
+        await inter.response.send_message("you are not a bot developer")
+        return
     if extension == "all":
         for extension in bot.extensions:
             try:
@@ -53,6 +61,9 @@ async def extensions_unload(inter: disnake.ApplicationCommandInteraction, extens
 
 @extensions.sub_command(name="reload", description="reload an extension. use ```all``` to reload all extensions")
 async def extensions_reload(inter: disnake.ApplicationCommandInteraction, extension: str) -> None:
+    if inter.author.id not in config.BOT_DEVELOPERS:
+        await inter.response.send_message("you are not a bot developer")
+        return
     if extension == "all":
         for extension in bot.extensions:
             try:
