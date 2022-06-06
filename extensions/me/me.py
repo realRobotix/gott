@@ -10,12 +10,12 @@ class Me(commands.Cog):
 
 
 @commands.slash_command(name="me", description="change your nickname color or icon")
-async def me(inter, self):
+async def me(inter: disnake.ApplicationCommandInteraction, self):
     pass
 
 
 @me.sub_command(name="role", description="get your role")
-async def me_get_role(inter, self):
+async def me_get_role(inter: disnake.ApplicationCommandInteraction, self):
     author = inter.author
     # create a role for the user
     role = disnake.utils.get(inter.guild.roles, name=author.name)
@@ -39,7 +39,7 @@ async def me_get_role(inter, self):
 
 
 @me.sub_command(name="colour", description="change the colour of your nickname")
-async def me_change_colour_from_rgb(inter, self, red: int = None, green: int = None, blue: int = None, hex: str = None, random: bool = False):
+async def me_change_colour_from_rgb(inter: disnake.ApplicationCommandInteraction, self, red: commands.Range[0, 255] = None, green: commands.Range[0, 255] = None, blue: commands.Range[0, 255] = None, hex: str = None, random: bool = False):
     author = inter.author
     role = disnake.utils.get(inter.guild.roles, name=author.name)
 
