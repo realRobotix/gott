@@ -2,12 +2,12 @@ import os
 import disnake
 import disnake.ext
 from disnake.ext import commands
-import config
+from dotenv import load_dotenv
 
 
 def main():
     print("running")
-    bot.run(config.DISCORD_BOT_TOKEN)
+    bot.run(DISCORD_BOT_TOKEN)
 
 
 bot = commands.Bot(command_prefix='!',
@@ -16,14 +16,14 @@ bot = commands.Bot(command_prefix='!',
 
 @bot.slash_command(name="extensions", description="used to configure extensions")
 async def extensions(inter: disnake.ApplicationCommandInteraction):
-    if inter.author.id not in config.BOT_DEVELOPERS:
+    if inter.author.id not in BOT_DEVELOPERS:
         await inter.response.send_message("only bot developers can use this command", ephemeral=True)
         return
 
 
-@extensions.sub_command(name="load", description="load an extension. use ```all``` to load all extensions")
+@extensions.sub_command(name="load", description="load an extension. use \"all\" to load all extensions")
 async def extensions_load(inter: disnake.ApplicationCommandInteraction, extension: str) -> None:
-    if inter.author.id not in config.BOT_DEVELOPERS:
+    if inter.author.id not in BOT_DEVELOPERS:
         await inter.response.send_message("only bot developers can use this command", ephemeral=True)
         return
     if extension == "all":
@@ -46,9 +46,9 @@ async def extensions_load(inter: disnake.ApplicationCommandInteraction, extensio
         await inter.response.send_message(f"failed to load {extension}\n{e}", ephemeral=True)
 
 
-@extensions.sub_command(name="unload", description="unload an extension. use ```all``` to unload all extensions")
+@extensions.sub_command(name="unload", description="unload an extension. use \"all\" to unload all extensions")
 async def extensions_unload(inter: disnake.ApplicationCommandInteraction, extension: str) -> None:
-    if inter.author.id not in config.BOT_DEVELOPERS:
+    if inter.author.id not in BOT_DEVELOPERS:
         await inter.response.send_message("only bot developers can use this command", ephemeral=True)
         return
     if extension == "all":
@@ -66,9 +66,9 @@ async def extensions_unload(inter: disnake.ApplicationCommandInteraction, extens
         await inter.response.send_message(f"failed to unload {extension}\n{e}", ephemeral=True)
 
 
-@extensions.sub_command(name="reload", description="reload an extension. use ```all``` to reload all extensions")
+@extensions.sub_command(name="reload", description="reload an extension. use \"all\" to reload all extensions")
 async def extensions_reload(inter: disnake.ApplicationCommandInteraction, extension: str) -> None:
-    if inter.author.id not in config.BOT_DEVELOPERS:
+    if inter.author.id not in BOT_DEVELOPERS:
         await inter.response.send_message("you are not a bot developer")
         return
     if extension == "all":
@@ -86,6 +86,16 @@ async def extensions_reload(inter: disnake.ApplicationCommandInteraction, extens
         await inter.response.send_message(f"failed to reload {extension}\n{e}", ephemeral=True)
 if __name__ == "__main__":
     try:
+        try:
+            load_dotenv()
+        except Exception:
+            pass
+        try:
+            DISCORD_BOT_TOKEN = os.environ['DISCORD_BOT_TOKEN']
+            BOT_DEVELOPERS = os.environ['BOT_DEVELOPERS'].split('\n')
+        except Exception:
+            print("missing environment variables or environment files")
+            exit(1)
         main()
     except KeyboardInterrupt:
         print("shutting down")
