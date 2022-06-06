@@ -1,11 +1,12 @@
 import disnake
 import disnake.ext
 from disnake.ext import commands
+from config import DISCORD_BOT_TOKEN
 
 
 def main():
     print("running")
-    bot.run("OTY3NDk3NDQyODU5ODI3MjQy.Gl8ej4.Ctye1103UBjxIcE64X_FNO0o_qOX001WqRpeq4")
+    bot.run(DISCORD_BOT_TOKEN)
 
 
 bot = commands.Bot(command_prefix='!',
