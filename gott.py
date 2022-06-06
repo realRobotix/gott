@@ -1,5 +1,4 @@
 import os
-from posixpath import dirname
 import disnake
 import disnake.ext
 from disnake.ext import commands
