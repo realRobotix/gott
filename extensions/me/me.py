@@ -1,10 +1,13 @@
+if __name__ == "__main__":
+    raise RuntimeError("This module is not meant to be run directly")
+
 import utils.role_positions as role_positions
 import disnake
 import disnake.ext
 from disnake.ext import commands
 
 
-class Me(commands.Cog):
+class Me(commands.Cog, name="me"):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 

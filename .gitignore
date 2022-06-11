@@ -1,5 +1,5 @@
-# Ignore config files
-config.py
+# Ignore vscode workspace files
+*.code-workspace
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
