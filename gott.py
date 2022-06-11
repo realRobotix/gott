@@ -28,6 +28,8 @@ async def extensions_load(inter: disnake.ApplicationCommandInteraction, extensio
         return
     if extension == "all":
         for (dirpath, dirname, filenames) in os.walk("./extensions"):
+            successful_loads = ""
+            failed_loads = ""
             for file in filenames:
                 fullPath = os.path.join(dirpath, file)
                 if file.endswith(".py") and not file.startswith("_"):
@@ -35,9 +37,13 @@ async def extensions_load(inter: disnake.ApplicationCommandInteraction, extensio
                                                          3].replace("/", ".").replace("\\", ".").split("extensions.")[1]
                     try:
                         bot.load_extension(extension)
-                        await inter.response.send_message(f"loaded {extension}", ephemeral=True)
+                        successful_loads += f"loaded {extension}\n"
                     except Exception as e:
-                        await inter.response.send_message(f"failed to load {extension}\n{e}", ephemeral=True)
+                        failed_loads += f"failed to load {extension}\n{e}\n"
+            if successful_loads != "":
+                await inter.response.send_message(successful_loads, ephemeral=True)
+            if failed_loads != "":
+                await inter.response.send_message(failed_loads, ephemeral=True)
         return
     try:
         bot.load_extension(f"extensions.{extension}")
@@ -52,12 +58,18 @@ async def extensions_unload(inter: disnake.ApplicationCommandInteraction, extens
         await inter.response.send_message("only bot developers can use this command", ephemeral=True)
         return
     if extension == "all":
+        successful_unloads = ""
+        failed_unloads = ""
         for extension in bot.extensions:
             try:
                 bot.unload_extension(extension)
-                await inter.response.send_message(f"unloaded {extension}", ephemeral=True)
+                successful_unloads += f"unloaded {extension}\n"
             except Exception as e:
-                await inter.response.send_message(f"failed to unload {extension}\n{e}", ephemeral=True)
+                failed_unloads += f"failed to unload {extension}\n{e}\n"
+        if successful_unloads != "":
+            await inter.response.send_message(successful_unloads, ephemeral=True)
+        if failed_unloads != "":
+            await inter.response.send_message(failed_unloads, ephemeral=True)
         return
     try:
         bot.unload_extension(f"extensions.{extension}")
@@ -72,18 +84,26 @@ async def extensions_reload(inter: disnake.ApplicationCommandInteraction, extens
         await inter.response.send_message("you are not a bot developer")
         return
     if extension == "all":
+        successful_reloads = ""
+        failed_reloads = ""
         for extension in bot.extensions:
             try:
                 bot.reload_extension(extension)
-                await inter.response.send_message(f"reloaded {extension}", ephemeral=True)
+                successful_reloads += f"reloaded {extension}\n"
             except Exception as e:
-                await inter.response.send_message(f"failed to reload {extension}\n{e}", ephemeral=True)
+                failed_reloads += f"failed to reload {extension}\n{e}\n"
+        if successful_reloads != "":
+            await inter.response.send_message(successful_reloads, ephemeral=True)
+        if failed_reloads != "":
+            await inter.response.send_message(failed_reloads, ephemeral=True)
         return
     try:
         bot.reload_extension(f"extension.{extension}")
         await inter.response.send_message(f"reloaded {extension}", ephemeral=True)
     except Exception as e:
         await inter.response.send_message(f"failed to reload {extension}\n{e}", ephemeral=True)
+
+
 if __name__ == "__main__":
     try:
         try:
@@ -96,10 +116,7 @@ if __name__ == "__main__":
                 map(int, os.environ['BOT_DEVELOPERS'].split('\n')))
         except Exception:
             print("missing environment variables or environment files")
-            exit(1)
+            exit()
         main()
     except KeyboardInterrupt:
         print("shutting down")
-        exit(0)
-    finally:
-        bot.close()
