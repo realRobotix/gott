@@ -92,7 +92,8 @@ if __name__ == "__main__":
             pass
         try:
             DISCORD_BOT_TOKEN = os.environ['DISCORD_BOT_TOKEN']
-            BOT_DEVELOPERS = os.environ['BOT_DEVELOPERS'].split('\n')
+            BOT_DEVELOPERS = list(
+                map(int, os.environ['BOT_DEVELOPERS'].split('\n')))
         except Exception:
             print("missing environment variables or environment files")
             exit(1)
