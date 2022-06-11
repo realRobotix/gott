@@ -10,35 +10,18 @@ def main():
     bot.run(DISCORD_BOT_TOKEN)
 
 
-def load_env():
-    try:
-        load_dotenv()
-    except Exception:
-        pass
-    try:
-        DISCORD_BOT_TOKEN = os.environ['DISCORD_BOT_TOKEN']
-        BOT_DEVELOPERS = list(
-            map(int, os.environ['BOT_DEVELOPERS'].split('\n')))
-        return DISCORD_BOT_TOKEN, BOT_DEVELOPERS
-    except Exception:
-        print("couldn't load env")
-        raise Exception("couldn't load env")
-
-
-def create_bot():
-    global bot
-    bot = commands.Bot(command_prefix='!',
-                       owner_ids=BOT_DEVELOPERS, test_guilds=[970711821478686721], intents=disnake.Intents.all(), auto_sync=True)
+bot = commands.Bot(command_prefix='!',
+                   test_guilds=[970711821478686721], intents=disnake.Intents.all(), auto_sync=True)
 
 
 @bot.slash_command(name="extensions", description="used to configure extensions")
-@bot.check(disnake.ext.commands.is_owner)
 async def extensions(inter: disnake.ApplicationCommandInteraction):
-    pass
+    if inter.author.id not in BOT_DEVELOPERS:
+        await inter.response.send_message("only bot developers can use this command", ephemeral=True)
+        return
 
 
 @extensions.sub_command(name="load", description="load an extension. use \"all\" to load all extensions")
-@bot.check(disnake.ext.commands.is_owner)
 async def extensions_load(inter: disnake.ApplicationCommandInteraction, extension: str) -> None:
     if inter.author.id not in BOT_DEVELOPERS:
         await inter.response.send_message("only bot developers can use this command", ephemeral=True)
@@ -64,7 +47,6 @@ async def extensions_load(inter: disnake.ApplicationCommandInteraction, extensio
 
 
 @extensions.sub_command(name="unload", description="unload an extension. use \"all\" to unload all extensions")
-@bot.check(disnake.ext.commands.is_owner)
 async def extensions_unload(inter: disnake.ApplicationCommandInteraction, extension: str) -> None:
     if inter.author.id not in BOT_DEVELOPERS:
         await inter.response.send_message("only bot developers can use this command", ephemeral=True)
@@ -85,7 +67,6 @@ async def extensions_unload(inter: disnake.ApplicationCommandInteraction, extens
 
 
 @extensions.sub_command(name="reload", description="reload an extension. use \"all\" to reload all extensions")
-@bot.check(disnake.ext.commands.is_owner)
 async def extensions_reload(inter: disnake.ApplicationCommandInteraction, extension: str) -> None:
     if inter.author.id not in BOT_DEVELOPERS:
         await inter.response.send_message("you are not a bot developer")
@@ -103,12 +84,21 @@ async def extensions_reload(inter: disnake.ApplicationCommandInteraction, extens
         await inter.response.send_message(f"reloaded {extension}", ephemeral=True)
     except Exception as e:
         await inter.response.send_message(f"failed to reload {extension}\n{e}", ephemeral=True)
-
 if __name__ == "__main__":
     try:
-        DISCORD_BOT_TOKEN, BOT_DEVELOPERS = load_env()
+        try:
+            load_dotenv()
+        except Exception:
+            pass
+        try:
+            DISCORD_BOT_TOKEN = os.environ['DISCORD_BOT_TOKEN']
+            BOT_DEVELOPERS = os.environ['BOT_DEVELOPERS'].split('\n')
+        except Exception:
+            print("missing environment variables or environment files")
+            exit(1)
         main()
     except KeyboardInterrupt:
         print("shutting down")
+        exit(0)
     finally:
         bot.close()
