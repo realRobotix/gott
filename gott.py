@@ -4,7 +4,7 @@ import disnake
 import disnake.ext
 from disnake.ext import commands
 from dotenv import load_dotenv
-from exeptions import *
+from utils.exeptions import *
 
 
 def setup_logging():
