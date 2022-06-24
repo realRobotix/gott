@@ -1,8 +1,20 @@
+import logging
 import os
 import disnake
 import disnake.ext
 from disnake.ext import commands
 from dotenv import load_dotenv
+import extensions
+
+
+def setup_logging():
+    logger = logging.getLogger('disnake')
+    logger.setLevel(logging.DEBUG)
+    handler = logging.FileHandler(
+        filename='disnake.log', encoding='utf-8', mode='w')
+    handler.setFormatter(logging.Formatter(
+        '%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+    logger.addHandler(handler)
 
 
 def main():
@@ -11,7 +23,7 @@ def main():
 
 
 bot = commands.Bot(command_prefix='!',
-                   test_guilds=[970711821478686721], intents=disnake.Intents.all(), auto_sync=True)
+                   test_guilds=[970711821478686721], intents=disnake.Intents.all(), auto_sync=True, sync_commands=True)
 
 
 @bot.slash_command(name="extensions", description="used to configure extensions")
@@ -115,8 +127,9 @@ if __name__ == "__main__":
             BOT_DEVELOPERS = list(
                 map(int, os.environ['BOT_DEVELOPERS'].split('\n')))
         except Exception:
-            print("missing environment variables or environment files")
+            print("missing environment variables")
             exit()
+        setup_logging()
         main()
     except KeyboardInterrupt:
         print("shutting down")

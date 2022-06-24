@@ -9,7 +9,7 @@ class Me(commands.Cog):
         self.bot = bot
 
 
-@commands.slash_command(name="me", description="change your nickname color or icon")
+@commands.slash_command(name="me", description="change your nickname color or icon", auto_sync=True)
 async def me(inter: disnake.ApplicationCommandInteraction, self):
     pass
 
@@ -44,8 +44,7 @@ async def me_change_colour_from_rgb(inter: disnake.ApplicationCommandInteraction
     role = disnake.utils.get(inter.guild.roles, name=author.name)
 
     if role == None:
-        await inter.respond("you don't have a role. use ```/me role``` to get one")
-        await inter.response.send_message(f"changed your nickname colour to {role.color}")
+        await inter.response.send_message("you don't have a role. use ```/me role``` to get one")
         return
     if hex != None:
         await role.edit(colour=disnake.Color.from_rgb(tuple(int(hex[i:i+2], 16) for i in (0, 2, 4))))
