@@ -1,11 +1,13 @@
 import os
+from turtle import color
+from venv import create
 import disnake
 import disnake.ext
 from disnake.ext import commands
 
 
 class Manager(commands.Cog):
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
 
     @commands.slash_command(name="manager", description="used to manage extensions")
@@ -15,84 +17,99 @@ class Manager(commands.Cog):
 
     @manager.sub_command(name="load", description="load an extension. use \"all\" to load all extensions")
     async def extensions_load(self, inter: disnake.ApplicationCommandInteraction, extension: str) -> None:
+        successful_loads = ""
+        failed_loads = ""
         if extension == "all":
             for (dirpath, dirname, filenames) in os.walk("./extensions"):
-                successful_loads = ""
-                failed_loads = ""
                 for file in filenames:
-                    if dirname == "base":
-                        continue
                     fullPath = os.path.join(dirpath, file)
                     if file.endswith(".py") and not file.startswith("_"):
                         extension = "extensions." + fullPath[:-
                                                              3].replace("/", ".").replace("\\", ".").split("extensions.")[1]
+                        if extension.startswith("extensions.base"):
+                            continue
                         try:
                             self.bot.load_extension(extension)
-                            successful_loads += f"loaded {extension}\n"
+                            successful_loads += f"\nsuccessfully loaded {extension}"
                         except Exception as e:
-                            failed_loads += f"failed to load {extension}\n{e}\n"
-                if successful_loads != "":
-                    await inter.response.send_message(successful_loads, ephemeral=True)
-                if failed_loads != "":
-                    await inter.response.send_message(failed_loads, ephemeral=True)
-            return
-        try:
-            self.bot.load_extension(f"extensions.{extension}")
-            await inter.response.send_message(f"loaded {extension}", ephemeral=True)
-        except Exception as e:
-            await inter.response.send_message(f"failed to load {extension}\n{e}", ephemeral=True)
+                            failed_loads += f"\nfailed to load {extension}\n{e}"
+        else:
+            try:
+                self.bot.load_extension(f"extensions.{extension}")
+                successful_loads += f"\nsuccessfully loaded {extension}"
+            except Exception as e:
+                failed_loads += f"\nfailed to load {extension}\n{e}"
+        embed = self.create_embed(
+            successful=successful_loads, failed=failed_loads, type="load")
+        await inter.response.send_message(embed=embed, ephemeral=True)
 
     @manager.sub_command(name="unload", description="unload an extension. use \"all\" to unload all extensions")
     async def extensions_unload(self, inter: disnake.ApplicationCommandInteraction, extension: str) -> None:
+        successful_unloads = ""
+        failed_unloads = ""
         if extension == "all":
-            successful_unloads = ""
-            failed_unloads = ""
-            for extension in self.bot.extensions:
-                if extension.startswith("base"):
+            for extension in list(self.bot.extensions):
+                if extension.startswith("extensions.base"):
                     continue
                 try:
                     self.bot.unload_extension(extension)
-                    successful_unloads += f"unloaded {extension}\n"
+                    successful_unloads += f"\nsuccessfully unloaded {extension}"
                 except Exception as e:
-                    failed_unloads += f"failed to unload {extension}\n{e}\n"
-            if successful_unloads != "":
-                await inter.response.send_message(successful_unloads, ephemeral=True)
-            if failed_unloads != "":
-                await inter.response.send_message(failed_unloads, ephemeral=True)
-            return
-        try:
-            self.bot.unload_extension(f"extensions.{extension}")
-            await inter.response.send_message(f"unloaded {extension}", ephemeral=True)
-        except Exception as e:
-            await inter.response.send_message(f"failed to unload {extension}\n{e}", ephemeral=True)
+                    failed_unloads += f"\nfailed to unload {extension}\n{e}"
+        else:
+            try:
+                self.bot.unload_extension(f"extensions.{extension}")
+                successful_unloads += f"\nsuccessfully unloaded {extension}"
+            except Exception as e:
+                failed_unloads += f"\nfailed to unload {extension}\n{e}"
+        embed = self.create_embed(
+            successful=successful_unloads, failed=failed_unloads, type="unload")
+        await inter.response.send_message(embed=embed, ephemeral=True)
 
     @manager.sub_command(name="reload", description="reload an extension. use \"all\" to reload all extensions")
     async def extensions_reload(self, inter: disnake.ApplicationCommandInteraction, extension: str) -> None:
+        successful_reloads = ""
+        failed_reloads = ""
         if extension == "all":
-            successful_reloads = ""
-            failed_reloads = ""
-            for extension in self.bot.extensions:
-                if extension.startswith("base"):
+            for extension in list(self.bot.extensions):
+                if extension.startswith("extensions.base"):
                     continue
                 try:
                     self.bot.reload_extension(extension)
-                    successful_reloads += f"reloaded {extension}\n"
+                    successful_reloads += f"\nsuccessfully reloaded {extension}"
                 except Exception as e:
-                    failed_reloads += f"failed to reload {extension}\n{e}\n"
-            if successful_reloads != "":
-                await inter.response.send_message(successful_reloads, ephemeral=True)
-            if failed_reloads != "":
-                await inter.response.send_message(failed_reloads, ephemeral=True)
-            return
-        try:
-            self.bot.reload_extension(f"extension.{extension}")
-            await inter.response.send_message(f"reloaded {extension}", ephemeral=True)
-        except Exception as e:
-            await inter.response.send_message(f"failed to reload {extension}\n{e}", ephemeral=True)
+                    failed_reloads += f"\nfailed to reload {extension}\n{e}"
+        else:
+            try:
+                self.bot.reload_extension(f"extensions.{extension}")
+                successful_reloads += f"\nsuccessfully reloaded {extension}"
+            except Exception as e:
+                failed_reloads += f"\nfailed to reload {extension}\n{e}"
+        embed = self.create_embed(
+            successful=successful_reloads, failed=failed_reloads, type="reload")
+        await inter.response.send_message(embed=embed, ephemeral=True)
 
     @manager.sub_command(name="list", description="list all currently running extensions")
     async def extensions_list(self, inter: disnake.ApplicationCommandInteraction) -> None:
-        await inter.response.send_message(self.bot.extensions)
+        await inter.response.send_message(self.bot.extensions, ephemeral=True)
+
+    def create_embed(self, type: str, successful: str, failed: str) -> disnake.Embed:
+        successful = successful.strip()
+        failed = failed.strip()
+        if successful == "" or failed == None:
+            successful = "none"
+            colour = disnake.Colour.red()
+        if failed == "" or failed == None:
+            failed = "none"
+            colour = disnake.Colour.green()
+        if successful != "none" and failed != "none":
+            colour = disnake.Colour.orange()
+        embed = disnake.Embed(title=f"Extensions {type}ed!", colour=colour)
+        embed.add_field(
+            name=f"Successful {type}s:", value=f"```{successful}```", inline=False)
+        embed.add_field(
+            name=f"Failed {type}s:", value=f"```{failed}```", inline=False)
+        return embed
 
 
 def setup(bot: commands.Bot):
