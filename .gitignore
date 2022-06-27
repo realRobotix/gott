@@ -1,3 +1,6 @@
+# Ignore notes
+*.xopp
+
 # Ignore vscode workspace files
 *.code-workspace
 
