@@ -5,6 +5,7 @@ import disnake.ext
 from disnake.ext import commands
 from dotenv import load_dotenv
 from utils.exeptions import *
+import utils.db as db
 
 
 def setup_logging():
@@ -34,7 +35,7 @@ def main():
                     bot.load_extension(extension)
                 except Exception as e:
                     raise BaseLoadExeption("")
-    bot.run(DISCORD_BOT_TOKEN)
+    bot.run(env.DISCORD_BOT_TOKEN)
 
 
 bot = commands.Bot(
@@ -43,21 +44,25 @@ bot = commands.Bot(
     intents=disnake.Intents.all(),
     auto_sync=True,
     sync_commands=True,
+    reload=True,
 )
 
 
-if __name__ == "__main__":
-    try:
+class Env:
+    def __init__(self) -> None:
         try:
             load_dotenv()
         except Exception:
             pass
-        try:
-            DISCORD_BOT_TOKEN = os.environ["DISCORD_BOT_TOKEN"]
-            BOT_DEVELOPERS = list(map(int, os.environ["BOT_DEVELOPERS"].split("\n")))
-        except Exception:
-            print("missing environment variables")
-            exit()
+        self.DISCORD_BOT_TOKEN = os.environ["DISCORD_BOT_TOKEN"]
+        self.BOT_DEVELOPERS = list(map(int, os.environ["BOT_DEVELOPERS"].split("\n")))
+        self.DB_CERT_PATH = os.environ["DB_CERT_PATH"]
+
+
+if __name__ == "__main__":
+    try:
+        env = Env()
+        db.mongo
         setup_logging()
         main()
     except KeyboardInterrupt:

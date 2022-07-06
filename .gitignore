@@ -1,3 +1,6 @@
+# Ignore certs
+*.pem
+
 # Ignore notes
 *.xopp
 
