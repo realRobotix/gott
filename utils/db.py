@@ -1,10 +1,11 @@
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from bson.codec_options import TypeRegistry
+from utils import env
 
 
 class Mongo(MongoClient):
-    def __init__(self) -> None:
+    def __init__(self, cert: str) -> None:
         self.uri = "mongodb+srv://discord-bot.jhhzwuy.mongodb.net/?authSource=%24external&authMechanism=MONGODB-X509&retryWrites=true&w=majority"
         super().__init__(
             host=self.uri,
@@ -12,9 +13,6 @@ class Mongo(MongoClient):
             connect=True,
             type_registry=TypeRegistry(),
             tls=True,
-            tlsCertificateKeyFile="C:/Users/Julian/Coding/gott/X509-cert-1874534277825620058.pem",
+            tlsCertificateKeyFile=cert,
             server_api=ServerApi("1"),
         )
-
-
-mongo = Mongo()
