@@ -1,6 +1,4 @@
 import os
-from turtle import color
-from venv import create
 import disnake
 import disnake.ext
 from disnake.ext import commands
