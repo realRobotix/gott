@@ -3,7 +3,7 @@ from disnake.ext import commands
 
 
 class BotEmoji(commands.Cog):
-    def __init__(self, bot: commands.bot) -> None:
+    def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
 
     @commands.slash_command(name="emoji")
@@ -19,7 +19,7 @@ class BotEmoji(commands.Cog):
             for file in filenames:
                 try:
                     fullPath = os.path.join(dirpath, file)
-                    if file.endswith((".png", ".jpg")) and not file.startswith(
+                    if file.endswith((".png", ".jpg", ".gif")) and not file.startswith(
                         ("_", ".")
                     ):
                         await inter.guild.create_custom_emoji(
