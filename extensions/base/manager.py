@@ -1,4 +1,5 @@
 import os
+from urllib import response
 import disnake
 import disnake.ext
 from disnake.ext import commands
@@ -16,7 +17,7 @@ class Manager(commands.Cog):
     @manager.sub_command(
         name="load", description='load an extension. use "all" to load all extensions'
     )
-    async def extensions_load(
+    async def load(
         self, inter: disnake.ApplicationCommandInteraction, extension: str
     ) -> None:
         successful_loads = ""
@@ -55,7 +56,7 @@ class Manager(commands.Cog):
         name="unload",
         description='unload an extension. use "all" to unload all extensions',
     )
-    async def extensions_unload(
+    async def unload(
         self, inter: disnake.ApplicationCommandInteraction, extension: str
     ) -> None:
         successful_unloads = ""
@@ -84,7 +85,7 @@ class Manager(commands.Cog):
         name="reload",
         description='reload an extension. use "all" to reload all extensions',
     )
-    async def extensions_reload(
+    async def reload(
         self, inter: disnake.ApplicationCommandInteraction, extension: str
     ) -> None:
         successful_reloads = ""
@@ -112,10 +113,11 @@ class Manager(commands.Cog):
     @manager.sub_command(
         name="list", description="list all currently running extensions"
     )
-    async def extensions_list(
-        self, inter: disnake.ApplicationCommandInteraction
-    ) -> None:
-        await inter.response.send_message(self.bot.extensions, ephemeral=True)
+    async def list(self, inter: disnake.ApplicationCommandInteraction) -> None:
+        response = ""
+        for key in self.bot.extensions.keys():
+            response += key + "\n"
+        await inter.response.send_message(response, ephemeral=True)
 
     def create_embed(self, type: str, successful: str, failed: str) -> disnake.Embed:
         successful = successful.strip()
