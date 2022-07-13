@@ -20,21 +20,21 @@ class Moderator(commands.Cog):
     async def delete(
         self,
         inter: disnake.ApplicationCommandInteraction,
-        amount: int,
-        user: disnake.Member = None,
+        limit: int,
+        member: disnake.Member = None,
         regex: str = None,
     ):
         if regex != None:
             pattern = re.compile(regex)
 
         def check(m: disnake.Message):
-            if user != None and regex != None:
-                return m.author == user and re.search(pattern, m.content)
-            if user != None or regex != None:
-                return m.author == user or re.search(pattern, m.content)
+            if member != None and regex != None:
+                return m.author == member and re.search(pattern, m.content)
+            if member != None or regex != None:
+                return m.author == member or re.search(pattern, m.content)
 
         await inter.response.defer(ephemeral=True)
-        deleted = await inter.channel.purge(limit=amount, check=check)
+        deleted = await inter.channel.purge(limit=limit, check=check)
         await inter.edit_original_message(content=f"deleted {len(deleted)} messages")
 
 
