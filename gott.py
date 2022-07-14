@@ -58,7 +58,7 @@ class Gott(commands.Bot):
                         if extension.startswith("extensions.base"):
                             continue
                         try:
-                            self.bot.load_extension(extension)
+                            self.load_extension(extension)
                         except Exception as e:
                             raise ExtensionLoadExeption(f"Failed to load {extension}")
         print("running")

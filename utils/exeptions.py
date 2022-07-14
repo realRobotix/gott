@@ -1,3 +1,4 @@
-class BaseLoadExeption(Exception):
-    """raised when there is an error during the loading of the base"""
+class ExtensionLoadExeption(Exception):
+    """raised when there is an error during the loading of an Extension"""
+
     pass
