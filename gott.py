@@ -6,6 +6,7 @@ from disnake.ext import commands
 from utils.exeptions import *
 from utils import db
 from utils import env
+from extensions.base.manager import Manager
 
 
 class Gott(commands.Bot):
@@ -25,7 +26,7 @@ class Gott(commands.Bot):
             intents=disnake.Intents.all(),
             auto_sync=True,
             sync_commands=True,
-            reload=True,
+            reload=self.env.BOT_AUTO_RELOAD,
         )
         for (dirpath, dirname, filenames) in os.walk("./extensions/base"):
             for file in filenames:
@@ -41,9 +42,27 @@ class Gott(commands.Bot):
                     try:
                         self.load_extension(extension)
                     except Exception as e:
-                        raise BaseLoadExeption("")
+                        raise ExtensionLoadExeption(f"Failed to load {extension}")
+        if self.env.BOT_AUTO_LOAD:
+            for (dirpath, dirname, filenames) in os.walk("./extensions"):
+                for file in filenames:
+                    fullPath = os.path.join(dirpath, file)
+                    if file.endswith(".py") and not file.startswith("_"):
+                        extension = (
+                            "extensions."
+                            + fullPath[:-3]
+                            .replace("/", ".")
+                            .replace("\\", ".")
+                            .split("extensions.")[1]
+                        )
+                        if extension.startswith("extensions.base"):
+                            continue
+                        try:
+                            self.bot.load_extension(extension)
+                        except Exception as e:
+                            raise ExtensionLoadExeption(f"Failed to load {extension}")
         print("running")
-        self.run(self.env.DISCORD_BOT_TOKEN)
+        self.run(self.env.BOT_DISCORD_TOKEN)
 
 
 if __name__ == "__main__":
