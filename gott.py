@@ -6,7 +6,6 @@ from disnake.ext import commands
 from utils.exeptions import *
 from utils import db
 from utils import env
-from extensions.base.manager import Manager
 
 
 class Gott(commands.Bot):
