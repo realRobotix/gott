@@ -1,5 +1,6 @@
 import os
-from urllib import response
+from re import sub
+import subprocess
 import disnake
 import disnake.ext
 from disnake.ext import commands
@@ -14,7 +15,11 @@ class Manager(commands.Cog):
     async def manager(self, inter: disnake.ApplicationCommandInteraction):
         pass
 
-    @manager.sub_command(
+    @manager.sub_command_group(name="extension")
+    async def extension(self, inter: disnake.ApplicationCommandInteraction):
+        pass
+
+    @extension.sub_command(
         name="load", description='load an extension. use "all" to load all extensions'
     )
     async def load(
@@ -52,7 +57,7 @@ class Manager(commands.Cog):
         )
         await inter.response.send_message(embed=embed, ephemeral=True)
 
-    @manager.sub_command(
+    @extension.sub_command(
         name="unload",
         description='unload an extension. use "all" to unload all extensions',
     )
@@ -81,7 +86,7 @@ class Manager(commands.Cog):
         )
         await inter.response.send_message(embed=embed, ephemeral=True)
 
-    @manager.sub_command(
+    @extension.sub_command(
         name="reload",
         description='reload an extension. use "all" to reload all extensions',
     )
@@ -110,7 +115,7 @@ class Manager(commands.Cog):
         )
         await inter.response.send_message(embed=embed, ephemeral=True)
 
-    @manager.sub_command(
+    @extension.sub_command(
         name="list", description="list all currently running extensions"
     )
     async def list(self, inter: disnake.ApplicationCommandInteraction) -> None:
@@ -136,6 +141,27 @@ class Manager(commands.Cog):
         )
         embed.add_field(name=f"Failed {type}s:", value=f"```{failed}```", inline=False)
         return embed
+
+    @manager.sub_command_group(name="service")
+    async def service(self, inter: disnake.ApplicationCommandInteraction):
+        pass
+
+    @service.sub_command(name="restart")
+    async def restart(self, inter: disnake.ApplicationCommandInteraction):
+        pro = subprocess.run(
+            "systemctl restart gott", capture_output=True, encoding="utf-8"
+        )
+        await inter.response.send_message(embed=SubprocessEmbed(pro))
+
+
+class SubprocessEmbed(disnake.Embed):
+    def __init__(self, process: subprocess.CompletedProcess):
+        if process.returncode == 0:
+            colour = disnake.Colour.green
+        else:
+            colour = disnake.Colour.red
+        super().__init__(colour=colour)
+        self.add_field(name="Output:", value=process.stdout)
 
 
 def setup(bot: commands.Bot):
