@@ -149,7 +149,7 @@ class Manager(commands.Cog):
     @service.sub_command(name="restart")
     async def restart(self, inter: disnake.ApplicationCommandInteraction):
         pro = subprocess.run(
-            "systemctl restart gott", capture_output=True, encoding="utf-8"
+            ["systemctl", "restart gott"], capture_output=True, encoding="utf-8"
         )
         await inter.response.send_message(embed=SubprocessEmbed(pro))
 
