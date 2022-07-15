@@ -10,4 +10,7 @@ class SubprocessEmbed(disnake.Embed):
         else:
             colour = disnake.Colour.red()
         super().__init__(colour=colour)
-        self.add_field(name="Output:", value=process.stdout)
+        value = process.stdout + process.stderr
+        if value == "" or value == None:
+            value = "None"
+        self.add_field(name="Output:", value=value)
