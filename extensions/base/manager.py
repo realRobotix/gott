@@ -154,6 +154,15 @@ class Manager(commands.Cog):
         )
         await inter.response.send_message(embed=SubprocessEmbed(pro), ephemeral=True)
 
+    @manager.sub_command_group(name="git")
+    async def git(self, inter: disnake.ApplicationCommandInteraction):
+        pass
+
+    @git.sub_command(name="pull")
+    async def pull(self, inter: disnake.ApplicationCommandInteraction):
+        a = subprocess.run(["git", "pull"], capture_output=True, encoding="utf-8")
+        await inter.response.send_message(embed=SubprocessEmbed(a), ephemeral=True)
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(Manager(bot))
