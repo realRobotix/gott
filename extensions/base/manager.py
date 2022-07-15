@@ -150,7 +150,10 @@ class Manager(commands.Cog):
     @service.sub_command(name="restart")
     async def restart(self, inter: disnake.ApplicationCommandInteraction):
         pro = subprocess.run(
-            ["systemctl", "restart", "gott"], capture_output=True, encoding="utf-8"
+            ["systemctl", "restart", "gott"],
+            cwd=self.bot.path,
+            capture_output=True,
+            encoding="utf-8",
         )
         await inter.response.send_message(embed=SubprocessEmbed(pro), ephemeral=True)
 
@@ -160,7 +163,9 @@ class Manager(commands.Cog):
 
     @git.sub_command(name="pull")
     async def pull(self, inter: disnake.ApplicationCommandInteraction):
-        a = subprocess.run(["git", "pull"], capture_output=True, encoding="utf-8")
+        a = subprocess.run(
+            ["git", "pull"], cwd=self.bot.path, capture_output=True, encoding="utf-8"
+        )
         await inter.response.send_message(embed=SubprocessEmbed(a), ephemeral=True)
 
 
