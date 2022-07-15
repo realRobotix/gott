@@ -3,11 +3,12 @@ import subprocess
 import disnake
 import disnake.ext
 from disnake.ext import commands
+from gott import Gott
 from utils.embeds import SubprocessEmbed
 
 
 class Manager(commands.Cog):
-    def __init__(self, bot: commands.Bot) -> None:
+    def __init__(self, bot: Gott) -> None:
         self.bot = bot
 
     @commands.slash_command(name="manager", description="used to manage extensions")
@@ -28,7 +29,7 @@ class Manager(commands.Cog):
         successful_loads = ""
         failed_loads = ""
         if extension == "all":
-            for (dirpath, dirname, filenames) in os.walk("./extensions"):
+            for (dirpath, dirname, filenames) in os.walk(f"{self.bot.path}/extensions"):
                 for file in filenames:
                     fullPath = os.path.join(dirpath, file)
                     if file.endswith(".py") and not file.startswith("_"):
