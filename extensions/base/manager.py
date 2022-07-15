@@ -151,7 +151,7 @@ class Manager(commands.Cog):
         pro = subprocess.run(
             ["systemctl", "restart gott"], capture_output=True, encoding="utf-8"
         )
-        await inter.response.send_message(embed=SubprocessEmbed(pro))
+        await inter.response.send_message(embed=SubprocessEmbed(pro), ephemeral=True)
 
 
 def setup(bot: commands.Bot):

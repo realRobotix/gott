@@ -16,7 +16,7 @@ class GitCommand(commands.Cog):
     @git.sub_command(name="pull")
     async def pull(self, inter: disnake.ApplicationCommandInteraction):
         a = subprocess.run(["git", "pull"], capture_output=True, encoding="utf-8")
-        await inter.response.send_message(embed=SubprocessEmbed(a))
+        await inter.response.send_message(embed=SubprocessEmbed(a), ephemeral=True)
 
 
 def setup(bot: commands.Bot):
