@@ -1,9 +1,9 @@
 import os
-from re import sub
 import subprocess
 import disnake
 import disnake.ext
 from disnake.ext import commands
+from utils.embeds import SubprocessEmbed
 
 
 class Manager(commands.Cog):
@@ -152,16 +152,6 @@ class Manager(commands.Cog):
             "systemctl restart gott", capture_output=True, encoding="utf-8"
         )
         await inter.response.send_message(embed=SubprocessEmbed(pro))
-
-
-class SubprocessEmbed(disnake.Embed):
-    def __init__(self, process: subprocess.CompletedProcess):
-        if process.returncode == 0:
-            colour = disnake.Colour.green
-        else:
-            colour = disnake.Colour.red
-        super().__init__(colour=colour)
-        self.add_field(name="Output:", value=process.stdout)
 
 
 def setup(bot: commands.Bot):

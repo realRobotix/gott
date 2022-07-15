@@ -1,7 +1,7 @@
 import disnake
 from disnake.ext import commands
 import subprocess
-from manager import SubprocessEmbed
+from utils.embeds import SubprocessEmbed
 
 
 class GitCommand(commands.Cog):
